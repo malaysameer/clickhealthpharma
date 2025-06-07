@@ -1,0 +1,181 @@
+openapi: 3.0.1
+info:
+  title: Medicine Inventory API
+  version: 1.0.0
+  description: Manage medicines in the pharmacy inventory.
+
+security:
+  - bearerAuth: []
+paths:
+  /medicines:
+    get:
+      summary: Get all medicines
+      operationId: listMedicines
+      responses:
+        '200':
+          description: List of medicines
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Medicine'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+    post:
+      summary: Add a new medicine
+      operationId: addMedicine
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMedicineRequest'
+      responses:
+        '201':
+          description: Medicine added
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /medicines/{id}:
+    get:
+      summary: Get medicine by ID
+      operationId: getMedicineById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Medicine found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Medicine'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Not found
+
+    put:
+      summary: Update a medicine
+      operationId: updateMedicine
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMedicineRequest'
+      responses:
+        '200':
+          description: Updated
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+    delete:
+      summary: Delete a medicine
+      operationId: deleteMedicine
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Deleted
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /medicines/expired:
+    get:
+      summary: List expired medicines
+      operationId: getExpiredMedicines
+      responses:
+        '200':
+          description: List of expired items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Medicine'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    UnauthorizedError:
+      description: Access token is missing or invalid
+  schemas:
+    Medicine:
+      type: object
+      required: [name, batchNumber, expiryDate, quantity, price]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        batchNumber:
+          type: string
+        expiryDate:
+          type: string
+          format: date
+        quantity:
+          type: integer
+        price:
+          type: number
+          format: double
+        supplierId:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        createdBy:
+          type: string
+          readOnly: true
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+        updatedBy:
+          type: string
+          readOnly: true
+    CreateMedicineRequest:
+      type: object
+      required:
+        - name
+        - batchNumber
+        - expiryDate
+        - quantity
+        - price
+      properties:
+        name:
+          type: string
+        batchNumber:
+          type: string
+        expiryDate:
+          type: string
+          format: date
+        quantity:
+          type: integer
+          minimum: 0
+        price:
+          type: number
+          format: double
+          minimum: 0.01
+        supplierId:
+          type: integer

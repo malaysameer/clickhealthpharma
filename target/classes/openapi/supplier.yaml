@@ -1,0 +1,152 @@
+openapi: 3.0.1
+info:
+  title: Supplier API
+  version: 1.0.0
+  description: Manage pharmaceutical suppliers.
+security:
+  - bearerAuth: []
+paths:
+  /suppliers:
+    get:
+      summary: Get all suppliers
+      operationId: listSuppliers
+      responses:
+        '200':
+          description: List of suppliers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Supplier'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    post:
+      summary: Add a new supplier
+      operationId: addSupplier
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSupplierRequest'
+      responses:
+        '201':
+          description: Supplier added
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /suppliers/{id}:
+    get:
+      summary: Get supplier by ID
+      operationId: getSupplierById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Supplier found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supplier'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Not found
+
+    put:
+      summary: Update supplier
+      operationId: updateSupplier
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSupplierRequest'
+      responses:
+        '200':
+          description: Updated
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+    delete:
+      summary: Delete supplier
+      operationId: deleteSupplier
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Deleted
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    UnauthorizedError:
+      description: Access token is missing or invalid
+  schemas:
+    Supplier:
+      type: object
+      required: [name, contactEmail, phone]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        contactEmail:
+          type: string
+          format: email
+        phone:
+          type: string
+        address:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        createdBy:
+          type: string
+          readOnly: true
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+        updatedBy:
+          type: string
+          readOnly: true
+    CreateSupplierRequest:
+      type: object
+      required:
+        - name
+        - contactEmail
+        - phone
+      properties:
+        name:
+          type: string
+        contactEmail:
+          type: string
+          format: email
+        phone:
+          type: string
+        address:
+          type: string
+

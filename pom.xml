@@ -1,0 +1,374 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.clickhealth</groupId>
+    <artifactId>phrama</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <properties>
+        <java.version>17</java.version>
+        <spring.boot.version>3.2.5</spring.boot.version>
+        <openapi.generator.version>6.5.0</openapi.generator.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring.boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <!-- Spring Boot Web -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- SpringDoc OpenAPI UI -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.3.0</version> <!-- or latest 2.x -->
+        </dependency>
+
+
+        <!-- Validation -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.openapitools</groupId>
+            <artifactId>jackson-databind-nullable</artifactId>
+            <version>0.2.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-logging</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.30</version> <!-- latest version as of 2025 -->
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+            <version>12.4.2.jre11</version> <!-- Use jre8/jre11 depending on your JDK -->
+        </dependency>
+
+        <!-- For @Valid, @NotNull, @Size, etc. -->
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+            <version>3.0.2</version>
+        </dependency>
+
+        <!-- For @Generated, @PostConstruct, etc. -->
+        <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+            <version>2.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>8.0.1.Final</version>
+        </dependency>
+        <!--<dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+            <version>10.10.0</version>
+        </dependency>-->
+
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-sqlserver</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>0.11.5</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>0.11.5</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>0.11.5</version>
+            <scope>runtime</scope>
+        </dependency>
+
+
+
+    </dependencies>
+
+    <build>
+        <sourceDirectory>src/main/java</sourceDirectory>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
+        <plugins>
+            <!-- OpenAPI Generator -->
+            <plugin>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <version>${openapi.generator.version}</version>
+                <executions>
+                    <execution>
+                        <id>generate-medicine-api</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/medicine.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <library>spring-boot</library>
+                            <apiPackage>com.clickhealth.pharma.medicine.api</apiPackage>
+                            <modelPackage>com.clickhealth.pharma.medicine.model</modelPackage>
+                            <configOptions>
+                                <interfaceOnly>true</interfaceOnly>
+                                <apiInterfacePattern>.*</apiInterfacePattern>
+                                <useSpringBoot3>false</useSpringBoot3>
+                                <dateLibrary>java8</dateLibrary>
+                                <apiUtil>false</apiUtil>
+                                <useJakartaEe>true</useJakartaEe> <!-- ✅ This is key -->
+                            </configOptions>
+                            <output>${project.build.directory}/generated-sources/[module-name]</output>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-supplier-api</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/supplier.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <library>spring-boot</library>
+                            <apiPackage>com.clickhealth.pharma.supplier.api</apiPackage>
+                            <modelPackage>com.clickhealth.pharma.supplier.model</modelPackage>
+                            <configOptions>
+                                <interfaceOnly>true</interfaceOnly>
+                                <apiInterfacePattern>.*</apiInterfacePattern>
+                                <useSpringBoot3>false</useSpringBoot3>
+                                <dateLibrary>java8</dateLibrary>
+                                <nullableReferenceTypes>false</nullableReferenceTypes>
+                                <apiUtil>false</apiUtil>
+                                <useJakartaEe>true</useJakartaEe> <!-- ✅ This is key -->
+                            </configOptions>
+                            <output>${project.build.directory}/generated-sources/[module-name]</output>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-customer-api</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/customer.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <library>spring-boot</library>
+                            <apiPackage>com.clickhealth.pharma.customer.api</apiPackage>
+                            <modelPackage>com.clickhealth.pharma.customer.model</modelPackage>
+                            <configOptions>
+                                <interfaceOnly>true</interfaceOnly>
+                                <apiInterfacePattern>.*</apiInterfacePattern>
+                                <useSpringBoot3>false</useSpringBoot3>
+                                <dateLibrary>java8</dateLibrary>
+                                <nullableReferenceTypes>false</nullableReferenceTypes>
+                                <apiUtil>false</apiUtil>
+                                <useJakartaEe>true</useJakartaEe> <!-- ✅ This is key -->
+                            </configOptions>
+                            <output>${project.build.directory}/generated-sources/[module-name]</output>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-sales-api</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/sales.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <library>spring-boot</library>
+                            <apiPackage>com.clickhealth.pharma.sales.api</apiPackage>
+                            <modelPackage>com.clickhealth.pharma.sales.model</modelPackage>
+                            <output>${project.build.directory}/generated-sources/sales</output>
+                            <configOptions>
+                                <interfaceOnly>true</interfaceOnly>
+                                <useSpringBoot3>false</useSpringBoot3>
+                                <dateLibrary>java8</dateLibrary>
+                                <nullableReferenceTypes>false</nullableReferenceTypes>
+                                <apiUtil>false</apiUtil>
+                                <useJakartaEe>true</useJakartaEe> <!-- ✅ This is key -->
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-purchase-api</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/purchases.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <library>spring-boot</library>
+                            <apiPackage>com.clickhealth.pharma.purchase.api</apiPackage>
+                            <modelPackage>com.clickhealth.pharma.purchase.model</modelPackage>
+                            <output>${project.build.directory}/generated-sources/purchase</output>
+                            <configOptions>
+                                <interfaceOnly>true</interfaceOnly>
+                                <useSpringBoot3>false</useSpringBoot3>
+                                <dateLibrary>java8</dateLibrary>
+                                <nullableReferenceTypes>false</nullableReferenceTypes>
+                                <apiUtil>false</apiUtil>
+                                <useJakartaEe>true</useJakartaEe> <!-- ✅ This is key -->
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-user-api</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/users.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <library>spring-boot</library>
+                            <apiPackage>com.clickhealth.pharma.user.api</apiPackage>
+                            <modelPackage>com.clickhealth.pharma.user.model</modelPackage>
+                            <output>${project.build.directory}/generated-sources/user</output>
+                            <configOptions>
+                                <interfaceOnly>true</interfaceOnly>
+                                <useSpringBoot3>false</useSpringBoot3>
+                                <dateLibrary>java8</dateLibrary>
+                                <nullableReferenceTypes>false</nullableReferenceTypes>
+                                <apiUtil>false</apiUtil>
+                                <useJakartaEe>true</useJakartaEe> <!-- ✅ This is key -->
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-report-api</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/reports.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <library>spring-boot</library>
+                            <apiPackage>com.clickhealth.pharma.report.api</apiPackage>
+                            <modelPackage>com.clickhealth.pharma.report.model</modelPackage>
+                            <output>${project.build.directory}/generated-sources/report</output>
+                            <configOptions>
+                                <interfaceOnly>true</interfaceOnly>
+                                <useSpringBoot3>false</useSpringBoot3>
+                                <dateLibrary>java8</dateLibrary>
+                                <nullableReferenceTypes>false</nullableReferenceTypes>
+                                <apiUtil>false</apiUtil>
+                                <useJakartaEe>true</useJakartaEe> <!-- ✅ This is key -->
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-pharmacy-api</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/pharmacy.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <library>spring-boot</library>
+                            <apiPackage>com.clickhealth.pharma.pharmacy.api</apiPackage>
+                            <modelPackage>com.clickhealth.pharma.pharmacy.model</modelPackage>
+                            <output>${project.build.directory}/generated-sources/pharmacy</output>
+                            <configOptions>
+                                <interfaceOnly>true</interfaceOnly>
+                                <useSpringBoot3>false</useSpringBoot3>
+                                <dateLibrary>java8</dateLibrary>
+                                <nullableReferenceTypes>false</nullableReferenceTypes>
+                                <apiUtil>false</apiUtil>
+                                <useJakartaEe>true</useJakartaEe> <!-- ✅ This is key -->
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-auth-api</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/auth.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <library>spring-boot</library>
+                            <apiPackage>com.clickhealth.pharma.auth.api</apiPackage>
+                            <modelPackage>com.clickhealth.pharma.auth.model</modelPackage>
+                            <output>${project.build.directory}/generated-sources/auth</output>
+                            <configOptions>
+                                <interfaceOnly>true</interfaceOnly>
+                                <useSpringBoot3>false</useSpringBoot3>
+                                <dateLibrary>java8</dateLibrary>
+                                <nullableReferenceTypes>false</nullableReferenceTypes>
+                                <apiUtil>false</apiUtil>
+                                <useJakartaEe>true</useJakartaEe> <!-- ✅ This is key -->
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Compiler plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.10.1</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+
+            <!-- Spring Boot Maven -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring.boot.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

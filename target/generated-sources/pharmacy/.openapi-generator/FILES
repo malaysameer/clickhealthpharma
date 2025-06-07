@@ -1,0 +1,7 @@
+.openapi-generator-ignore
+README.md
+pom.xml
+src/main/java/com/clickhealth/pharma/pharmacy/api/ApiUtil.java
+src/main/java/com/clickhealth/pharma/pharmacy/api/PharmaciesApi.java
+src/main/java/com/clickhealth/pharma/pharmacy/model/CreatePharmacyRequest.java
+src/main/java/com/clickhealth/pharma/pharmacy/model/Pharmacy.java

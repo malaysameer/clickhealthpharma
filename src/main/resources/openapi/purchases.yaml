@@ -1,0 +1,161 @@
+openapi: 3.0.1
+info:
+  title: Purchases API
+  version: 1.0.0
+  description: Record medicine purchases from suppliers and restock inventory.
+security:
+  - bearerAuth: []
+paths:
+  /purchases:
+    get:
+      summary: Get all purchase records
+      operationId: listPurchases
+      responses:
+        '200':
+          description: List of purchases
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Purchase'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+    post:
+      summary: Record a new purchase
+      operationId: createPurchase
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePurchaseRequest'
+      responses:
+        '201':
+          description: Purchase recorded
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /purchases/{id}:
+    get:
+      summary: Get purchase by ID
+      operationId: getPurchaseById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Purchase found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Purchase'
+        '404':
+          description: Not found
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    UnauthorizedError:
+      description: Access token is missing or invalid
+  schemas:
+    Purchase:
+      type: object
+      required: [supplierId, items, purchaseDate]
+      properties:
+        id:
+          type: integer
+        supplierId:
+          type: integer
+        purchaseDate:
+          type: string
+          format: date-time
+        totalAmount:
+          type: number
+          format: double
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PurchaseItem'
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        createdBy:
+          type: string
+          readOnly: true
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+        updatedBy:
+          type: string
+          readOnly: true
+    CreatePurchaseRequest:
+      type: object
+      required:
+        - supplierId
+        - purchaseDate
+        - items
+      properties:
+        supplierId:
+          type: integer
+        purchaseDate:
+          type: string
+          format: date-time
+        totalAmount:
+          type: number
+          format: double
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreatePurchaseItemRequest'
+    PurchaseItem:
+      type: object
+      required: [medicineId, quantity, cost]
+      properties:
+        medicineId:
+          type: integer
+        quantity:
+          type: integer
+        cost:
+          type: number
+          format: double
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        createdBy:
+          type: string
+          readOnly: true
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+        updatedBy:
+          type: string
+          readOnly: true
+    CreatePurchaseItemRequest:
+      type: object
+      required:
+        - medicineId
+        - quantity
+        - cost
+      properties:
+        medicineId:
+          type: integer
+        quantity:
+          type: integer
+        cost:
+          type: number
+          format: double
+

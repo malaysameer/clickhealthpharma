@@ -1,0 +1,6 @@
+README.md
+pom.xml
+src/main/java/com/clickhealth/pharma/customer/api/ApiUtil.java
+src/main/java/com/clickhealth/pharma/customer/api/CustomersApi.java
+src/main/java/com/clickhealth/pharma/customer/model/CreateCustomerRequest.java
+src/main/java/com/clickhealth/pharma/customer/model/Customer.java
