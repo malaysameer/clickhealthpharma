@@ -1,9 +1,0 @@
-.openapi-generator-ignore
-README.md
-pom.xml
-src/main/java/com/clickhealth/pharma/purchase/api/ApiUtil.java
-src/main/java/com/clickhealth/pharma/purchase/api/PurchasesApi.java
-src/main/java/com/clickhealth/pharma/purchase/model/CreatePurchaseItemRequest.java
-src/main/java/com/clickhealth/pharma/purchase/model/CreatePurchaseRequest.java
-src/main/java/com/clickhealth/pharma/purchase/model/Purchase.java
-src/main/java/com/clickhealth/pharma/purchase/model/PurchaseItem.java
